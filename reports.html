@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MedVerse AI - Reports History</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+<style>
+    /* Ensure the container takes up the full viewport height minus nav */
+    .reports-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80vh; /* Centers the card vertically on the screen */
+        padding: 20px;
+    }
+
+    /* The Centered Empty State Popup */
+    .empty-history-popup {
+        text-align: center;
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(20px);
+        padding: 50px 30px;
+        border-radius: 20px;
+        border: 1px solid rgba(0, 234, 255, 0.25);
+        width: 100%;
+        max-width: 350px; /* Limits width so it doesn't stretch */
+        box-shadow: 0 0 40px rgba(0, 234, 255, 0.08);
+        animation: fadeIn 0.8s ease-in;
+    }
+
+    .empty-icon {
+        font-size: 60px;
+        margin-bottom: 20px;
+        display: block;
+        filter: drop-shadow(0 0 10px rgba(0, 234, 255, 0.3));
+    }
+
+    .empty-history-popup h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #fff;
+    }
+
+    .empty-history-popup p {
+        font-size: 14px;
+        color: #aaa;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+
+    /* Re-using your specific button style for consistency */
+    .create-btn {
+        padding: 12px 30px;
+        border-radius: 25px;
+        border: none;
+        background: linear-gradient(90deg, #00eaff, #007bff);
+        color: #000;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: 0.3s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .create-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0 20px #00eaff;
+    }
+</style>
+</head>
+<body>
+    <div class="particles"></div>
+
+    <nav>
+        <div class="nav-left">
+            <img src="assets/images/logo.png" class="nav-logo">
+            <span>MedVerse AI</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="#" class="active">Reports</a>
+            <a href="account.html" class="account-btn">Account</a>
+        </div>
+    </nav>
+
+<main class="reports-container">
+    <div id="emptyState" class="empty-history-popup">
+        <span class="empty-icon">📁</span>
+        <h2>No History Available</h2>
+        <button class="create-btn" onclick="window.location.href='index.html'">Create New</button>
+    </div>
+
+    <div id="historyList" class="history-list" style="display: none;"></div>
+</main>
+
+    <footer class="footer" style="position: fixed; bottom: 0; width: 100%; text-align: center; padding: 20px; font-size: 12px; opacity: 0.5;">
+        Not a Medical Diagnosis. Consult a Professional.
+    </footer>
+</body>
+</html>

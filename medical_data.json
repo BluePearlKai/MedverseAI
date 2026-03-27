@@ -1,0 +1,62 @@
+[
+    {
+        "topic": "General Greeting",
+        "keywords": ["hello", "hi", "hey", "namaste", "greetings"],
+        "answer": "Namaste! I am MedVerse AI. I can analyze your medical reports or answer health questions. How can I help you?"
+    },
+    {
+        "topic": "High Cholesterol",
+        "keywords": ["cholesterol", "ldl", "hdl", "lipid profile", "fatty"],
+        "answer": "High cholesterol can be managed with a balanced diet low in saturated fats, regular exercise, and medication if prescribed. Foods like oats, nuts, and fatty fish help lower LDL."
+    },
+    {
+        "topic": "Chest Pain",
+        "keywords": ["chest pain", "heart hurts", "tightness", "angina"],
+        "answer": "Chest pain can indicate various conditions, ranging from acidity to heart issues. If you experience severe tightness, sweating, or pain radiating to the arm, seek emergency medical help immediately."
+    },
+    {
+        "topic": "Diabetes / High Blood Sugar",
+        "keywords": ["diabetes", "sugar", "glucose", "insulin", "thirsty"],
+        "answer": "Diabetes management involves monitoring blood sugar levels, eating a fiber-rich diet, and staying active. Symptoms like excessive thirst or frequent urination should be checked by a doctor."
+    },
+    {
+        "topic": "Fever",
+        "keywords": ["fever", "temperature", "hot", "chills", "shivering"],
+        "answer": "A fever is the body's way of fighting infection. Stay hydrated and rest. If your temperature exceeds 103°F (39.4°C) or lasts more than 3 days, consult a physician."
+    },
+    {
+        "topic": "Headache",
+        "keywords": ["headache", "migraine", "head hurts", "dizzy"],
+        "answer": "Headaches can be caused by stress, dehydration, or eye strain. Drink water and rest in a dark room. If accompanied by vision loss or severe vomiting, see a doctor."
+    },
+    {
+        "topic": "Hypertension / High BP",
+        "keywords": ["blood pressure", "bp", "hypertension", "tension", "high bp", "systolic", "diastolic"],
+        "answer": "Hypertension (High BP) is a condition where the force of the blood against the artery walls is too high. Management involves reducing salt intake, regular physical activity, and stress management. If your BP is consistently above 130/80 mmHg, consult a doctor."
+    },
+    {
+        "topic": "General Health",
+        "keywords": ["healthy", "diet", "fitness", "wellness"],
+        "answer": "A healthy lifestyle includes 7-8 hours of sleep, 30 minutes of daily activity, and a diet rich in fruits and vegetables. Hydration is also key to good health."
+    },
+    {
+        "topic": "Report Upload",
+        "keywords": ["upload", "report", "pdf", "analyze", "scan"],
+        "answer": "You can upload your medical PDF or image on the dashboard. I will scan the biomarkers and provide a simplified summary in your preferred language."
+    },
+    {
+        "topic": "Hypotension / Low BP",
+        "keywords": ["low bp", "hypotension", "dizziness", "fainting", "lightheaded", "low blood pressure"],
+        "answer": "Hypotension (Low BP) can cause dizziness and fainting. It is often caused by dehydration or heart problems. Drinking more water and standing up slowly can help alleviate symptoms."
+    },
+    {
+        "topic": "Thyroid / TSH",
+        "keywords": ["thyroid", "tsh", "hypothyroidism", "hyperthyroidism", "weight gain", "weight loss", "fatigue"],
+        "answer": "Thyroid disorders affect metabolism. High TSH often indicates Hypothyroidism (slowing down), leading to weight gain and fatigue. Low TSH may indicate Hyperthyroidism."
+    },
+    {
+        "topic": "Anemia / Low Hemoglobin",
+        "keywords": ["anemia", "hemoglobin", "iron", "pale", "weakness", "rbc"],
+        "answer": "Anemia occurs when you lack enough healthy red blood cells to carry adequate oxygen. Common symptoms are fatigue, skin pallor, and shortness of breath. Increasing iron-rich foods helps."
+    }
+]

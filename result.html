@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MedVerse AI - Results</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+
+<div class="particles"></div>
+
+<nav>
+    <div class="nav-left">
+        <img src="assets/images/logo.png" class="nav-logo">
+        <span id="brandLabel">MedVerse AI</span>
+    </div>
+    <div class="nav-links">
+        <a href="index.html" id="navHome">Home</a>
+        <a href="reports.html" id="navReports">Reports</a>
+        <a href="account.html" class="account-btn" id="navAccount">Account</a>
+    </div>
+</nav>
+
+<div class="lung-container">
+    <div class="lung"></div>
+</div>
+
+<div class="result-container">
+    <div class="result-card">
+        <h2 id="resultTitle">Medical Report Analysis</h2>
+
+        <div class="result-section">
+            <h3 id="summaryHeading">AI Summary</h3>
+            <div style="margin-bottom: 15px;">
+                <select id="resultLangSelect" style="padding: 8px; border-radius: 5px; border: 1px solid #00eaff; background: #001f2f; color: white;"></select>
+                <button id="translateBtn" onclick="manualTranslate()" style="padding: 8px 16px; border-radius: 5px; border: none; background: #00eaff; font-weight: bold; cursor: pointer;">Translate</button>
+            </div>
+            <p id="typingText"></p>
+        </div>
+
+        <div class="result-section">
+            <h3 id="riskHeading">Risk Assessment</h3>
+            <p class="risk-low" id="riskLabel">Low Risk</p>
+        </div>
+
+        <div class="result-section">
+            <h3 id="questionsHeading">Doctor-Ready Questions</h3>
+            <ul>
+                <li id="q1">Should I adjust my diet?</li>
+                <li id="q2">Is further testing required?</li>
+                <li id="q3">Are lifestyle changes enough?</li>
+            </ul>
+        </div>
+
+        <button class="download-btn" id="downloadBtn">Download Full Report</button>
+    </div>
+</div>
+
+<div class="disclaimer" id="disclaimerText">
+    Not a Medical Diagnosis. Consult a Professional.
+</div>
+
+<script src="assets/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MedVerse AI - Dashboard</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+
+<body>
+
+<div class="particles"></div>
+
+<nav>
+    <div class="nav-left">
+        <img src="assets/images/logo.png" class="nav-logo">
+        <span>MedVerse AI</span>
+    </div>
+    <div class="nav-links">
+        <a href="#" class="active">Home</a>
+        <a href="reports.html">Reports</a>
+        <a href="account.html" class="account-btn">Account</a>
+    </div>
+</nav>
+
+<main class="main-content">
+    <div class="main-container">
+        <div class="card">
+            <h2>Upload Medical Reports</h2>
+            <p class="card-desc">Upload reports for AI-powered analysis.</p>
+            <div class="upload-area" onclick="fakeUpload()">
+                Drag & Drop or Click
+                <span>PDF or Image</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Describe Symptoms & History</h2>
+            <p class="card-desc">Provide details for better diagnosis insights.</p>
+            <textarea placeholder="Type symptoms or medical history..."></textarea>
+        </div>
+
+    </div>
+
+    <div class="analyze-btn-container">
+        <button class="analyze-btn" onclick="goToResult()">Analyze Reports & Get Insights</button>
+    </div>
+    <div class="analyze-btn-container">
+
+    <div class="translate-dropdown">
+        <label>Translate Result:</label>
+        <select id="languageSelect">
+            <option value="en" selected>English</option>
+            <option value="hi">Hindi</option>
+            <option value="ta">Tamil</option>
+            <option value="mr">Marathi</option>
+        </select>
+    </div>
+</main>
+<footer class="disclaimer">
+    Not a Medical Diagnosis. Consult a Professional.
+</footer>
+
+<div id="loadingScreen" class="loading-screen">
+    <div class="loader-content">
+        <div class="ai-brain"></div>
+        <h2>MedVerse AI is Analyzing...</h2>
+        <p>Reading biomarkers • Cross-referencing data • Generating insights</p>
+    </div>
+</div>
+
+<script src="assets/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+flask
+flask-cors
+google-cloud-translate
+google-cloud-vision
+deep-translator
+PyPDF2
+Pillow
+pytesseract
+werkzeug
