@@ -4,7 +4,9 @@ import sqlite3
 from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import mysql.connector
 from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from aimodel.translate_me import MedVerseLLM
 from aimodel.document_processor import DocumentProcessor
@@ -23,6 +25,17 @@ CORS(app)  # Enable Cross-Origin Resource Sharing
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
 ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'bmp', 'gif', 'tiff'}
 MAX_FILE_SIZE = 50 * 1024 * 1024  # 50 MB
+
+db_config = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': 'RNG@0511', # <--- Your MySQL Password
+    'database': 'medverse_db'
+}
+
+def get_db_connection():
+    return mysql.connector.connect(**db_config)
+
 
 # Create upload directory if it doesn't exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -203,70 +216,48 @@ def chat_bot():
 
 
 # ========================= Authentication Endpoints =========================
+# --- AUTH & PROFILE ROUTES ---
 
 @app.route('/signup', methods=['POST'])
 def signup():
-    """User signup endpoint"""
+    data = request.get_json()
+    fullname, email, password = data.get('fullname'), data.get('email'), data.get('password')
+    hashed_pw = generate_password_hash(password)
     try:
-        data = request.json
-        email = data.get('email', '').strip()
-        password = data.get('password', '').strip()
-        name = data.get('name', 'User').strip()
-        
-        if not email or not password:
-            return jsonify({"error": "Email and password are required"}), 400
-        
-        conn = sqlite3.connect('medverse.db')
+        conn = get_db_connection()
         cursor = conn.cursor()
-        
-        try:
-            cursor.execute('INSERT INTO users (email, password, name) VALUES (?, ?, ?)', 
-                         (email, password, name))
-            conn.commit()
-            user_id = cursor.lastrowid
-            
-            return jsonify({
-                "success": True,
-                "user_id": user_id,
-                "message": f"Welcome {name}! Account created successfully."
-            }), 201
-        except sqlite3.IntegrityError:
-            return jsonify({"error": "Email already exists"}), 409
-        finally:
-            conn.close()
-    
+        cursor.execute("INSERT INTO users (full_name, email, password_hash) VALUES (%s, %s, %s)", 
+                       (fullname, email, hashed_pw))
+        conn.commit()
+        return jsonify({"message": "User registered"}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
+    finally:
+        if 'conn' in locals(): conn.close()
 
 @app.route('/login', methods=['POST'])
 def login():
-    """User login endpoint"""
+    data = request.get_json()
+    email, password = data.get('email'), data.get('password')
     try:
-        data = request.json
-        email = data.get('email', '').strip()
-        password = data.get('password', '').strip()
-        
-        if not email or not password:
-            return jsonify({"error": "Email and password are required"}), 400
-        
-        conn = sqlite3.connect('medverse.db')
-        cursor = conn.cursor()
-        cursor.execute('SELECT id, name FROM users WHERE email = ? AND password = ?', 
-                      (email, password))
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
         user = cursor.fetchone()
-        conn.close()
-        
-        if user:
-            return jsonify({
-                "success": True,
-                "user_id": user[0],
-                "name": user[1],
-                "message": f"Welcome back, {user[1]}!"
-            }), 200
-        else:
-            return jsonify({"error": "Invalid email or password"}), 401
-    
+        if user and check_password_hash(user['password_hash'], password):
+            return jsonify({"user_id": user['id'], "message": "Logged in"}), 200
+        return jsonify({"error": "Invalid credentials"}), 401
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/profile/<int:user_id>', methods=['GET'])
+def get_profile(user_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT full_name, email FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        return jsonify(user), 200 if user else 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

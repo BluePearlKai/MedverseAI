@@ -1,19 +1,75 @@
 // 1. Updated Login to save User ID
-async function login() {
-    const emailInput = document.getElementById('email').value;
-    const passwordInput = document.getElementById('password').value;
+const API_URL = "http://127.0.0.1:5000";
 
-    const response = await fetch('http://127.0.0.1:5000/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: emailInput, password: passwordInput })
-    });
-    const data = await response.json();
-    if (response.ok) {
-        localStorage.setItem('user_id', data.user_id);
-        window.location.href = "index.html";
-    } else { alert(data.error); }
+// --- LOGIN & SIGNUP ---
+async function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    try {
+        const res = await fetch(`${API_URL}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            localStorage.setItem("user_id", data.user_id);
+            window.location.href = "index.html";
+        } else { alert(data.error); }
+    } catch (e) { alert("Server is offline!"); }
 }
+
+// --- ACCOUNT PAGE DATA ---
+// Function to fetch and display user data
+async function loadAccountProfile() {
+    const userId = localStorage.getItem("user_id");
+    
+    if (!userId) {
+        console.warn("No user_id found. Please login.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://127.0.0.1:5000/profile/${userId}`);
+        const user = await response.json();
+
+        if (response.ok) {
+            // 1. Update Sidebar text
+            document.getElementById("sidebarName").textContent = user.full_name;
+            document.getElementById("sidebarEmail").textContent = user.email;
+
+            // 2. Update Input field values
+            document.getElementById("accName").value = user.full_name;
+            document.getElementById("accEmail").value = user.email;
+
+            // 3. Update the unique ID display
+            document.getElementById("accID").textContent = "MV-" + userId.padStart(4, '0');
+        }
+    } catch (error) {
+        console.error("Database connection error:", error);
+    }
+}
+
+// Ensure the function runs when the page loads
+window.onload = () => {
+    const path = window.location.pathname;
+    if (path.includes("account.html")) {
+        loadAccountProfile();
+    }
+    // (Include your other path checks for reports.html or index.html here)
+};
+
+function logout() {
+    localStorage.removeItem("user_id");
+    window.location.href = "login.html";
+}
+
+// Trigger load on page load
+if (window.location.pathname.includes("account.html")) {
+    window.onload = loadAccountProfile;
+}
+
 
 function handleFileUpload(event) {
     const file = event.target.files[0];
@@ -45,9 +101,6 @@ function saveAccountDetails() {
     alert("Account details updated successfully.");
 }
 
-function logout() {
-    window.location.href = "login.html";
-}
 
 let originalReportText = "Your cholesterol levels are slightly elevated. White blood cell count is normal. No immediate critical risks detected. Lifestyle improvements are recommended.";
 
