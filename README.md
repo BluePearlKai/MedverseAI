@@ -2,7 +2,7 @@
 
 Intelligent Medical Report Analysis Made Simple
 
-<p align="center"> <img src="docs/logo-placeholder.png" alt="MedVerse AI Logo" width="180"/> </p> <p align="center"> <b>Transform complex medical reports into clear, actionable health insights.</b><br> OCR • Risk Analysis • Multi-language Support • Patient Empowerment </p>
+<p align="center"> <img src="C:\Users\ayushi\Desktop\MedVerse AI\assets\images\logo.png" alt="MedVerse AI Logo" width="180"/> </p> <p align="center"> <b>Transform complex medical reports into clear, actionable health insights.</b><br> OCR • Risk Analysis • Multi-language Support • Patient Empowerment </p>
 📘 Introduction
 
 Medical reports are often complex, technical, and difficult for patients to interpret. Many individuals struggle to understand key biomarkers, risk indicators, and medical terminology — especially when reports are written in English or filled with dense medical jargon.
