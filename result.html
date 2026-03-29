@@ -36,12 +36,27 @@
                 <select id="resultLangSelect" style="padding: 8px; border-radius: 5px; border: 1px solid #00eaff; background: #001f2f; color: white;"></select>
                 <button id="translateBtn" onclick="manualTranslate()" style="padding: 8px 16px; border-radius: 5px; border: none; background: #00eaff; font-weight: bold; cursor: pointer;">Translate</button>
             </div>
+            <div id="backendStatus" class="backend-status backend-status-pending" aria-live="polite">Checking backend connection...</div>
             <p id="typingText"></p>
         </div>
 
         <div class="result-section">
             <h3 id="riskHeading">Risk Assessment</h3>
             <p class="risk-low" id="riskLabel">Low Risk</p>
+        </div>
+
+        <div class="result-section">
+            <h3 id="conditionsHeading">Identified Conditions</h3>
+            <ul id="diseasesList">
+                <li>Analysis pending...</li>
+            </ul>
+        </div>
+
+        <div class="result-section">
+            <h3 id="recommendationsHeading">Health Recommendations</h3>
+            <ul id="recommendationsList">
+                <li>Continue regular checkups</li>
+            </ul>
         </div>
 
         <div class="result-section">
@@ -61,6 +76,6 @@
     Not a Medical Diagnosis. Consult a Professional.
 </div>
 
-<script src="assets/js/script.js"></script>
+<script src="assets/js/script.js?v=20260329"></script>
 </body>
 </html>

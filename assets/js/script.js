@@ -103,6 +103,13 @@ function saveAccountDetails() {
 
 
 let originalReportText = "Your cholesterol levels are slightly elevated. White blood cell count is normal. No immediate critical risks detected. Lifestyle improvements are recommended.";
+let originalDynamicResultContent = {
+    riskLabel: "",
+    diseases: [],
+    recommendations: [],
+    questions: []
+};
+let backendStatusTimer = null;
 
 const resultPageOriginalTextMap = {
     brandLabel: "MedVerse AI",
@@ -112,12 +119,10 @@ const resultPageOriginalTextMap = {
     resultTitle: "Medical Report Analysis",
     summaryHeading: "AI Summary",
     translateBtn: "Translate",
+    conditionsHeading: "Identified Conditions",
+    recommendationsHeading: "Health Recommendations",
     riskHeading: "Risk Assessment",
-    riskLabel: "Low Risk",
     questionsHeading: "Doctor-Ready Questions",
-    q1: "Should I adjust my diet?",
-    q2: "Is further testing required?",
-    q3: "Are lifestyle changes enough?",
     downloadBtn: "Download Full Report",
     disclaimerText: "Not a Medical Diagnosis. Consult a Professional."
 };
@@ -150,6 +155,68 @@ function getReadableErrorMessage(error) {
     return error.message || "Unknown error";
 }
 
+function setBackendStatusIndicator(isOnline, detail = "") {
+    const statusElement = document.getElementById("backendStatus");
+    const translateButton = document.getElementById("translateBtn");
+    const langSelect = document.getElementById("resultLangSelect");
+
+    if (translateButton) {
+        translateButton.disabled = !isOnline;
+        translateButton.style.opacity = isOnline ? "1" : "0.65";
+        translateButton.style.cursor = isOnline ? "pointer" : "not-allowed";
+    }
+
+    if (langSelect) {
+        langSelect.disabled = !isOnline;
+        langSelect.style.opacity = isOnline ? "1" : "0.8";
+    }
+
+    if (!statusElement) {
+        return;
+    }
+
+    statusElement.style.display = isOnline ? "none" : "block";
+
+    if (isOnline) {
+        return;
+    }
+
+    statusElement.className = `backend-status ${isOnline ? "backend-status-online" : "backend-status-offline"}`;
+    statusElement.textContent = `Backend offline. Start Flask with: .venv\\Scripts\\python.exe app.py${detail ? ` (${detail})` : ""}`;
+}
+
+async function checkBackendStatus() {
+    const url = `${getBackendBaseUrl()}/health`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            cache: "no-store",
+            signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            setBackendStatusIndicator(false, `HTTP ${response.status}`);
+            return false;
+        }
+
+        setBackendStatusIndicator(true);
+        return true;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        let detail = getReadableErrorMessage(error);
+        if (detail && detail.length > 55) {
+            detail = detail.slice(0, 55) + "...";
+        }
+        setBackendStatusIndicator(false, detail);
+        return false;
+    }
+}
+
 function getLastAnalysis() {
     try {
         const raw = localStorage.getItem("medverse_last_analysis");
@@ -180,6 +247,63 @@ function applyStoredAnalysisToResultPage() {
         const el = document.getElementById(id);
         if (el && questions[index]) {
             el.textContent = questions[index];
+        }
+    });
+
+    cacheOriginalDynamicResultContent();
+
+    console.log("Analysis data applied to result page:", analysis);
+}
+
+function cacheOriginalDynamicResultContent() {
+    const riskLabelElement = document.getElementById("riskLabel");
+    const diseasesList = document.getElementById("diseasesList");
+    const recommendationsList = document.getElementById("recommendationsList");
+
+    originalDynamicResultContent = {
+        riskLabel: riskLabelElement ? (riskLabelElement.textContent || "").trim() : "",
+        diseases: diseasesList
+            ? Array.from(diseasesList.querySelectorAll("li")).map((li) => (li.textContent || "").trim()).filter(Boolean)
+            : [],
+        recommendations: recommendationsList
+            ? Array.from(recommendationsList.querySelectorAll("li")).map((li) => (li.textContent || "").trim()).filter(Boolean)
+            : [],
+        questions: ["q1", "q2", "q3"]
+            .map((id) => {
+                const element = document.getElementById(id);
+                return element ? (element.textContent || "").trim() : "";
+            })
+            .filter(Boolean)
+    };
+}
+
+function setListItems(containerId, values) {
+    const container = document.getElementById(containerId);
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "";
+    values.forEach((value) => {
+        const li = document.createElement("li");
+        li.textContent = value;
+        container.appendChild(li);
+    });
+}
+
+function applyDynamicResultContent(content) {
+    const riskLabelElement = document.getElementById("riskLabel");
+    if (riskLabelElement) {
+        riskLabelElement.textContent = content.riskLabel || "";
+    }
+
+    setListItems("diseasesList", content.diseases || []);
+    setListItems("recommendationsList", content.recommendations || []);
+
+    ["q1", "q2", "q3"].forEach((id, index) => {
+        const el = document.getElementById(id);
+        if (el && content.questions && content.questions[index]) {
+            el.textContent = content.questions[index];
         }
     });
 }
@@ -336,6 +460,104 @@ async function translateResultPageUI(targetLang) {
     applyResultPageTexts(translatedMap);
 }
 
+async function translateDynamicResultContent(targetLang) {
+    if ((targetLang || "english").toLowerCase() === "english") {
+        applyDynamicResultContent(originalDynamicResultContent);
+        return;
+    }
+
+    const payload = [];
+    const locations = [];
+
+    if (originalDynamicResultContent.riskLabel) {
+        payload.push(originalDynamicResultContent.riskLabel);
+        locations.push({ type: "risk" });
+    }
+
+    originalDynamicResultContent.diseases.forEach((text, index) => {
+        payload.push(text);
+        locations.push({ type: "disease", index });
+    });
+
+    originalDynamicResultContent.recommendations.forEach((text, index) => {
+        payload.push(text);
+        locations.push({ type: "recommendation", index });
+    });
+
+    originalDynamicResultContent.questions.forEach((text, index) => {
+        payload.push(text);
+        locations.push({ type: "question", index });
+    });
+
+    if (payload.length === 0) {
+        return;
+    }
+
+    const response = await fetchFromBackend("/translate_batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            texts: payload,
+            target_lang: targetLang
+        })
+    });
+
+    if (!response.ok) {
+        const responseText = await response.text();
+        let message = `Server error ${response.status}`;
+
+        try {
+            const errData = JSON.parse(responseText);
+            message = errData.error || message;
+        } catch (parseError) {
+            if (responseText) {
+                message = responseText;
+            }
+        }
+
+        throw new Error(message);
+    }
+
+    const data = await response.json();
+    const translated = Array.isArray(data.translated_texts) ? data.translated_texts : [];
+
+    if (translated.length !== payload.length) {
+        throw new Error("Dynamic translated text count mismatch");
+    }
+
+    const updated = {
+        riskLabel: originalDynamicResultContent.riskLabel,
+        diseases: [...originalDynamicResultContent.diseases],
+        recommendations: [...originalDynamicResultContent.recommendations],
+        questions: [...originalDynamicResultContent.questions]
+    };
+
+    translated.forEach((text, idx) => {
+        const location = locations[idx];
+        if (!location) {
+            return;
+        }
+
+        if (location.type === "risk") {
+            updated.riskLabel = text;
+        }
+
+        if (location.type === "disease") {
+            updated.diseases[location.index] = text;
+        }
+
+        if (location.type === "recommendation") {
+            updated.recommendations[location.index] = text;
+        }
+
+        if (location.type === "question") {
+            updated.questions[location.index] = text;
+        }
+    });
+
+    applyDynamicResultContent(updated);
+}
+
 async function typeEffect() {
     const typingContainer = document.getElementById("typingText");
     if (!typingContainer) {
@@ -381,10 +603,17 @@ async function manualTranslate() {
     const targetLang = langSelect.value || "english";
     localStorage.setItem("medverse_language", targetLang);
 
+    const backendOnline = await checkBackendStatus();
+    if (!backendOnline) {
+        typingContainer.innerText = "Translation is unavailable because the backend server is offline.";
+        return;
+    }
+
     typingContainer.innerText = "Translating...";
 
     try {
         await translateResultPageUI(targetLang);
+        await translateDynamicResultContent(targetLang);
         const translatedSummary = await translateSummaryText(targetLang);
         typingContainer.innerText = translatedSummary;
     } catch (error) {
@@ -395,15 +624,34 @@ async function manualTranslate() {
 
 async function initializeResultPage() {
     applyStoredAnalysisToResultPage();
+    cacheOriginalDynamicResultContent();
+
+    const statusElement = document.getElementById("backendStatus");
+    if (statusElement) {
+        statusElement.className = "backend-status backend-status-pending";
+        statusElement.textContent = "Checking backend connection...";
+    }
+
+    await checkBackendStatus();
+
+    if (backendStatusTimer) {
+        clearInterval(backendStatusTimer);
+    }
+    backendStatusTimer = setInterval(() => {
+        checkBackendStatus();
+    }, 15000);
+
     await setupResultLanguageDropdown();
 
     const targetLang = localStorage.getItem("medverse_language") || "english";
 
     try {
         await translateResultPageUI(targetLang);
+        await translateDynamicResultContent(targetLang);
     } catch (error) {
         console.warn("UI translation failed. Using English UI.", error.message);
         applyResultPageTexts(resultPageOriginalTextMap);
+        applyDynamicResultContent(originalDynamicResultContent);
     }
 
     await typeEffect();
