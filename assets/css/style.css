@@ -446,6 +446,32 @@ body {
     border: 1px solid #00eaff;
 }
 
+.backend-status {
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    border: 1px solid transparent;
+}
+
+.backend-status-pending {
+    color: #d8f7ff;
+    background: rgba(0, 123, 255, 0.15);
+    border-color: rgba(0, 123, 255, 0.45);
+}
+
+.backend-status-online {
+    color: #7cffc4;
+    background: rgba(0, 255, 136, 0.12);
+    border-color: rgba(0, 255, 136, 0.45);
+}
+
+.backend-status-offline {
+    color: #ffb7b7;
+    background: rgba(255, 77, 77, 0.12);
+    border-color: rgba(255, 77, 77, 0.45);
+}
+
 .risk-low {
     color: #00ff88;
     font-weight: bold;
